@@ -14,7 +14,7 @@ AutiTech is an AI-powered assistive application designed to support children wit
 - Faster-Whisper
 
 ## Live Demo
-[Your Streamlit Link]
+https://autitech-27.streamlit.app/#auti-tech
 
 ## How to Run
 pip install -r requirements.txt
