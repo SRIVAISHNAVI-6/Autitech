@@ -70,7 +70,7 @@ with col1:
     """, unsafe_allow_html=True)
 
 with col2:
-    st.image("C:\Users\sriva\Downloads\major_pro\frontend\hero-boy.jpeg", use_container_width=True)
+    st.image("assets/hero-boy.jpeg", use_container_width=True)
 
 # -----------------------------
 # 3 COLUMN LAYOUT
