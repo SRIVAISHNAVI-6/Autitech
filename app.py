@@ -10,6 +10,21 @@ from backend.models.speech_to_text.service import transcribe_audio
 # PAGE CONFIG
 # -----------------------------
 st.set_page_config(page_title="AutiTech", layout="wide")
+st.markdown("""
+<style>
+
+/* FULL PAGE BACKGROUND */
+[data-testid="stAppViewContainer"] {
+    background-color: #f3e9dc;
+}
+
+/* REMOVE HEADER WHITE */
+[data-testid="stHeader"] {
+    background: transparent;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # -----------------------------
 # CUSTOM UI STYLE
@@ -41,7 +56,21 @@ button {
 # -----------------------------
 # TITLE
 # -----------------------------
-st.markdown("<h1 class='title'>AUTITECH 🚀</h1>", unsafe_allow_html=True)
+col1, col2 = st.columns([2,1])
+
+with col1:
+    st.markdown("""
+    <h1 style='color:#5a2d1d; font-size:45px;'>
+    Empowering Autism Through Intelligent Technology
+    </h1>
+
+    <p style='color:#5a2d1d; font-size:18px;'>
+    AUTITECH supports children with autism by providing AI-powered communication tools that enhance speech, visual recognition, and language development.
+    </p>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.image("C:\Users\sriva\Downloads\major_pro\frontend\hero-boy.jpeg", use_container_width=True)
 
 # -----------------------------
 # 3 COLUMN LAYOUT
