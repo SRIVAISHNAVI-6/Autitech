@@ -1,4 +1,7 @@
 import streamlit as st
+import os
+from PIL import Image
+
 from backend.models.text_to_image.service import generate_image_from_text
 from backend.models.text_to_speech.service import process_image
 from backend.models.speech_to_text.service import transcribe_audio
@@ -15,7 +18,24 @@ text_input = st.text_input("Enter text")
 if st.button("Generate Image"):
     if text_input:
         image_path, score = generate_image_from_text(text_input)
-        st.image(image_path)
+
+        # 🔍 Debug: show path
+        st.write("Generated path:", image_path)
+
+        # ✅ Fix path issue
+        if image_path.startswith("../"):
+            image_path = image_path.replace("../", "")
+
+        # Ensure correct root path
+        full_path = os.path.join(os.getcwd(), image_path)
+
+        # ✅ Check if file exists
+        if os.path.exists(full_path):
+            img = Image.open(full_path)
+            st.image(img)
+        else:
+            st.error(f"Image not found at: {full_path}")
+
         st.write(f"Similarity Score: {score}")
     else:
         st.warning("Please enter text")
@@ -37,7 +57,12 @@ if uploaded_image is not None:
         else:
             st.image(uploaded_image)
             st.write(f"Extracted Text: {text}")
-            st.audio(audio_file)
+
+            # ✅ Fix audio path
+            if os.path.exists(audio_file):
+                st.audio(audio_file)
+            else:
+                st.error(f"Audio file not found: {audio_file}")
 
 
 # -----------------------------
