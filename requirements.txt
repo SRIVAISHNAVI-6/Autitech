@@ -6,3 +6,4 @@ pillow
 torch
 transformers
 scikit-learn
+git+https://github.com/openai/CLIP.git
