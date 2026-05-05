@@ -1,9 +1,11 @@
 import os
-import shutil
 import pandas as pd
 from gtts import gTTS
 
-# Get MAJOR_PRO root directory
+# -------------------------
+# PATH SETUP
+# -------------------------
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
 
 DATA_PATH = os.path.join(BASE_DIR, "data", "te_to_sp_dataset.csv")
@@ -13,21 +15,29 @@ AUDIO_FOLDER = os.path.join(BASE_DIR, "data", "audio")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(AUDIO_FOLDER, exist_ok=True)
 
-# Load dataset
+# -------------------------
+# LOAD DATASET
+# -------------------------
+
 DATASET = pd.read_csv(DATA_PATH)
 DATASET["image_path"] = DATASET["image_path"].str.strip()
 
+# -------------------------
+# FUNCTION
+# -------------------------
 
 def process_image(file):
 
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    # ✅ FIX: use .name
+    file_path = os.path.join(UPLOAD_FOLDER, file.name)
 
-    # Save uploaded image
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # ✅ FIX: save file correctly
+    with open(file_path, "wb") as f:
+        f.write(file.getbuffer())
 
-    image_name = file.filename
+    image_name = file.name
 
+    # Match dataset
     match = DATASET[DATASET["image_path"] == image_name]
 
     if match.empty:
@@ -35,9 +45,10 @@ def process_image(file):
 
     text = match.iloc[0]["text"]
 
+    # Save audio
     audio_path = os.path.join(AUDIO_FOLDER, "output.mp3")
 
     tts = gTTS(text=text, lang="en")
     tts.save(audio_path)
 
-    return image_name, text, "output.mp3"
+    return image_name, text, audio_path

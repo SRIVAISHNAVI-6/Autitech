@@ -1,9 +1,11 @@
 import os
-import shutil
 import pandas as pd
 from faster_whisper import WhisperModel
 
-# Get project root
+# -------------------------
+# PATH SETUP
+# -------------------------
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
 
 DATA_PATH = os.path.join(BASE_DIR, "data", "sp_to_te_dataset.csv")
@@ -11,22 +13,33 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, "data", "uploads")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Load model
+# -------------------------
+# LOAD MODEL
+# -------------------------
+
 model = WhisperModel("base", device="cpu")
 
-# Load dataset
+# -------------------------
+# LOAD DATASET
+# -------------------------
+
 df = pd.read_csv(DATA_PATH)
 df["text"] = df["text"].str.lower().str.strip()
 
+# -------------------------
+# FUNCTION
+# -------------------------
 
 def transcribe_audio(file):
 
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    # ✅ FIX: use .name instead of .filename
+    file_path = os.path.join(UPLOAD_FOLDER, file.name)
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # ✅ FIX: Streamlit file saving
+    with open(file_path, "wb") as f:
+        f.write(file.getbuffer())
 
-    # 🔥 FORCE ENGLISH
+    # 🔥 Transcribe
     segments, _ = model.transcribe(
         file_path,
         language="en",
@@ -39,6 +52,7 @@ def transcribe_audio(file):
 
     transcript = transcript.strip().lower()
 
+    # Match with dataset
     match = df[df["text"] == transcript]
 
     if not match.empty:
