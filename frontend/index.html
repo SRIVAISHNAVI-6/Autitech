@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUTITECH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #F3E9DC;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 80px;
+            background: #5E3023;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #F3E9DC;
+        }
+
+        /* HERO SECTION */
+
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 80px;
+            background: #F3E9DC;
+            color: #5E3023;
+        }
+
+        .hero-text {
+            max-width: 50%;
+        }
+
+        .hero-text h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            color: #5E3023;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .hero img {
+            width: 420px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        /* FEATURES SECTION */
+
+        .features {
+            padding: 80px;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 32px;
+            margin-bottom: 50px;
+            color: #5E3023;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #5E3023;
+            width: 350px;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: 0.3s;
+            color: #F3E9DC;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #F3E9DC;
+        }
+
+        input {
+            padding: 8px;
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 6px;
+            border: none;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin-top: 10px;
+            background: #F3E9DC;
+            color: #5E3023;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        img.result-img {
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 12px;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .result-box {
+            background: #F3E9DC;
+            color: #5E3023;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">AUTITECH</div>
+</div>
+
+<div class="hero">
+    <div class="hero-text">
+        <h1>Empowering Autism Through Intelligent Technology</h1>
+        <p>
+            AUTITECH supports children with autism by providing AI-powered
+            communication tools that enhance speech, visual recognition,
+            and language development.
+        </p>
+    </div>
+
+    <img src="hero-boy.jpeg" alt="Autism Support Child">
+</div>
+
+<div class="features">
+    <h2>Our Core Features</h2>
+
+    <div class="card-container">
+
+        <div class="card">
+            <h3>🖼 Text to Image</h3>
+            <input type="text" id="textInput" placeholder="Enter text">
+            <button onclick="generateImage()">Generate</button>
+            <div id="imageResult"></div>
+        </div>
+
+        <div class="card">
+            <h3>🧒 Image to Speech</h3>
+            <input type="file" id="imageUpload">
+            <button onclick="generateSpeech()">Convert</button>
+            <div id="speechResult"></div>
+        </div>
+
+        <div class="card">
+            <h3>🎤 Speech to Text</h3>
+            <input type="file" id="audioUpload">
+            <button onclick="transcribeAudio()">Transcribe</button>
+            <div id="textResult"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+const BASE_URL = "http://127.0.0.1:8000";
+
+async function generateImage() {
+    const text = document.getElementById("textInput").value;
+    const response = await fetch(`${BASE_URL}/text-to-image/?text=${text}`, { method: "POST" });
+    const data = await response.json();
+
+    document.getElementById("imageResult").innerHTML = `
+        <img class="result-img" src="${data.image_url}" />
+        <div class="result-box">
+            Similarity Score: ${data.similarity_score}
+        </div>
+    `;
+}
+
+async function generateSpeech() {
+    const fileInput = document.getElementById("imageUpload");
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    const response = await fetch(`${BASE_URL}/autism-speech/`, {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await response.json();
+
+    document.getElementById("speechResult").innerHTML = `
+        <img class="result-img" src="${data.image_url}" />
+        <div class="result-box">
+            Text: ${data.extracted_text}
+        </div>
+        <audio controls>
+            <source src="${data.audio_url}" type="audio/mpeg">
+        </audio>
+    `;
+}
+
+async function transcribeAudio() {
+    const fileInput = document.getElementById("audioUpload");
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    const response = await fetch(`${BASE_URL}/speech-to-text/`, {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await response.json();
+
+    document.getElementById("textResult").innerHTML = `
+        <div class="result-box">
+            <b>Original:</b> ${data.original_text}<br><br>
+            <b>Corrected:</b> ${data.corrected_text}
+        </div>
+    `;
+}
+
+</script>
+
+</body>
+</html>
